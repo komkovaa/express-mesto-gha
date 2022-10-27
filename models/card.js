@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-//Опишем схему
+// Опишем схему
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -25,4 +25,4 @@ const cardSchema = new mongoose.Schema({
   },
 });
 // Создаем модель и экспортируем ее
-module.export = mongoose.model('card', cardSchema);
+module.exports = mongoose.model('card', cardSchema);
