@@ -1,23 +1,57 @@
+const http2 = require('node:http2');
+
 const User = require('../models/user');
+
+const responseBadRequestError = (res, message) => res
+  .status(http2.constants.HTTP_STATUS_BAD_REQUEST)
+  .send({ message: `Переданы некорректные данные пользователя. ${message}` });
+
+const responseNotFoundError = (res, message) => res
+  .status(http2.constants.HTTP_STATUS_NOT_FOUND)
+  .send({ message: `Пользователь не найден. ${message}` });
+
+const responseServerError = (res, message) => res
+  .status(http2.constants.HTTP_STATUS_SERVICE_UNAVAILABLE)
+  .send({ message: `На сервере произошла ошибка. ${message}` });
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((users) => {
+      res.send({ data: users });
+    })
+    .catch((err) => {
+      responseServerError(res, err.message);
+    });
 };
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((user) => {
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidatorError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.message);
+      }
+    });
 };
 
 module.exports.getUserId = (req, res) => {
-  User.find({})
-    .then((userId) => res.send({ data: userId }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+  User.findById({ _id: req.params.userId })
+    .then((user) => {
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.message);
+      }
+    });
 };
 
 module.exports.updateProfileInfo = (req, res) => {
@@ -32,7 +66,13 @@ module.exports.updateProfileInfo = (req, res) => {
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidatorError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.message);
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -47,5 +87,11 @@ module.exports.updateAvatar = (req, res) => {
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidatorError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.message);
+      }
+    });
 };

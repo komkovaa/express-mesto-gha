@@ -1,9 +1,25 @@
+const http2 = require('node:http2');
+
 const Card = require('../models/card');
+
+const responseBadRequestError = (res, message) => res
+  .status(http2.constants.HTTP_STATUS_BAD_REQUEST)
+  .send({ message: `Переданы некорректные данные. ${message}` });
+
+const responseNotFoundError = (res, message) => res
+  .status(http2.constants.HTTP_STATUS_NOT_FOUND)
+  .send({ message: `Карточка не найдена. ${message}` });
+
+const responseServerError = (res, message) => res
+  .status(http2.constants.HTTP_STATUS_SERVICE_UNAVAILABLE)
+  .send({ message: `На сервере произошла ошибка. ${message}` });
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      responseServerError(res, err.message);
+    });
 };
 
 module.exports.createCard = (req, res) => {
@@ -11,13 +27,31 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidatorError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.message);
+      }
+    });
 };
 
 module.exports.getCardId = (req, res) => {
   Card.find({})
-    .then((cardId) => res.send({ data: cardId }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((cardId) => {
+      if (cardId === null) {
+        responseNotFoundError(res, err.message);
+      } else {
+        res.send({ data: cardId });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.message);
+      }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
