@@ -32,7 +32,7 @@ module.exports.createUser = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err.name === 'ValidatorError') {
+      if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
         responseServerError(res, err.message);
@@ -67,7 +67,7 @@ module.exports.updateProfileInfo = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidatorError') {
+      if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
         responseServerError(res, err.message);
@@ -88,7 +88,7 @@ module.exports.updateAvatar = (req, res) => {
   )
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidatorError') {
+      if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
         responseServerError(res, err.message);

@@ -28,7 +28,7 @@ module.exports.createCard = (req, res) => {
   Card.create({ name, link })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidatorError') {
+      if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
         responseServerError(res, err.message);
