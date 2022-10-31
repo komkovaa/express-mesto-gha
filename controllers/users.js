@@ -42,9 +42,9 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User.findById({ _id: req.params.userId })
-    .then((userId, err) => {
+    .then((userId) => {
       if (userId === null) {
-        responseNotFoundError(res, err.message);
+        responseNotFoundError(res);
       } else {
         res.send({ data: userId });
       }
