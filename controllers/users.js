@@ -6,9 +6,9 @@ const responseBadRequestError = (res, message) => res
   .status(http2.constants.HTTP_STATUS_BAD_REQUEST)
   .send({ message: `Переданы некорректные данные пользователя. ${message}` });
 
-// const responseNotFoundError = (res, message) => res
-//  .status(http2.constants.HTTP_STATUS_NOT_FOUND)
-//  .send({ message: `Пользователь не найден. ${message}` });
+const responseNotFoundError = (res, message) => res
+  .status(http2.constants.HTTP_STATUS_NOT_FOUND)
+  .send({ message: `Пользователь не найден. ${message}` });
 
 const responseServerError = (res, message) => res
   .status(http2.constants.HTTP_STATUS_SERVICE_UNAVAILABLE)
@@ -20,11 +20,7 @@ module.exports.getUsers = (req, res) => {
       res.send({ data: users });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        responseBadRequestError(res, err.message);
-      } else {
-        responseServerError(res, err.message);
-      }
+      responseServerError(res, err.message);
     });
 };
 
@@ -46,8 +42,12 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User.findById({ _id: req.params.userId })
-    .then((user) => {
-      res.send({ data: user });
+    .then((userId, err) => {
+      if (userId === null) {
+        responseNotFoundError(res, err.message);
+      } else {
+        res.send({ data: userId });
+      }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
