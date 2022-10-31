@@ -22,7 +22,7 @@ module.exports.getCards = (req, res) => {
     });
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
@@ -31,12 +31,12 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndDelete({ _id: req.params.cardId })
     .then((cardId) => {
       if (cardId === null) {
@@ -49,12 +49,12 @@ module.exports.deleteCard = (req, res) => {
       if (err.name === 'CastError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
@@ -71,12 +71,12 @@ module.exports.likeCard = (req, res) => {
       if (err.name === 'CastError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -93,7 +93,7 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'CastError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };

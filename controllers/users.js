@@ -24,7 +24,7 @@ module.exports.getUsers = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
@@ -35,12 +35,12 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };
 
-module.exports.getUserId = (req, res) => {
+module.exports.getUserId = (req, res, next) => {
   User.findById({ _id: req.params.userId })
     .then((userId) => {
       if (userId === null) {
@@ -53,12 +53,12 @@ module.exports.getUserId = (req, res) => {
       if (err.name === 'CastError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };
 
-module.exports.updateProfileInfo = (req, res) => {
+module.exports.updateProfileInfo = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -69,17 +69,18 @@ module.exports.updateProfileInfo = (req, res) => {
       // upsert: true, // если пользователь не найден, он будет создан
     },
   )
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -95,7 +96,7 @@ module.exports.updateAvatar = (req, res) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
-        responseServerError(res, err.message);
+        next(err);
       }
     });
 };
