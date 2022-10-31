@@ -36,13 +36,13 @@ module.exports.createCard = (req, res) => {
     });
 };
 
-module.exports.getCardId = (req, res) => {
-  Card.find({})
+module.exports.deleteCard = (req, res) => {
+  Card.findByIdAndDelete({ _id: req.params.cardId })
     .then((cardId) => {
       if (cardId === null) {
         responseNotFoundError(res);
       } else {
-        res.send({ data: cardId });
+        res.send({ message: 'Карточка удалена' });
       }
     })
     .catch((err) => {
