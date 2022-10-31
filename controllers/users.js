@@ -70,7 +70,7 @@ module.exports.updateProfileInfo = (req, res, next) => {
     },
   )
     .then((user) => {
-      res.send({ data: user }))
+      res.send({ data: user })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
