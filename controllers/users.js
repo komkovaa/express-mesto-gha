@@ -6,9 +6,9 @@ const responseBadRequestError = (res, message) => res
   .status(http2.constants.HTTP_STATUS_BAD_REQUEST)
   .send({ message: `Переданы некорректные данные пользователя. ${message}` });
 
-const responseNotFoundError = (res, message) => res
-  .status(http2.constants.HTTP_STATUS_NOT_FOUND)
-  .send({ message: `Пользователь не найден. ${message}` });
+// const responseNotFoundError = (res, message) => res
+//  .status(http2.constants.HTTP_STATUS_NOT_FOUND)
+//  .send({ message: `Пользователь не найден. ${message}` });
 
 const responseServerError = (res, message) => res
   .status(http2.constants.HTTP_STATUS_SERVICE_UNAVAILABLE)

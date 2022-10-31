@@ -40,7 +40,7 @@ module.exports.getCardId = (req, res) => {
   Card.find({})
     .then((cardId) => {
       if (cardId === null) {
-        responseNotFoundError(res, err.message);
+        responseNotFoundError(res);
       } else {
         res.send({ data: cardId });
       }
@@ -59,11 +59,39 @@ module.exports.likeCard = (req, res) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
-  );
+  )
+    .then((cardId, likes) => {
+      if (cardId === null) {
+        responseNotFoundError(res);
+      } else {
+        res.send({ data: likes });
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.message);
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res) => Card.findByIdAndUpdate(
   req.params.cardId,
   { $pull: { likes: req.user._id } }, // убрать _id из массива
-  { new: true },
+  { new: true }
+  .then((cardId, likes) => {
+    if (cardId === null) {
+      responseNotFoundError(res);
+    } else {
+      res.send({ data: likes });
+    }
+  })
+  .catch((err) => {
+    if (err.name === 'CastError') {
+      responseBadRequestError(res, err.message);
+    } else {
+      responseServerError(res, err.message);
+    }
+  });
 );
