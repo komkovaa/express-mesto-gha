@@ -2,17 +2,17 @@ const http2 = require('node:http2');
 
 const User = require('../models/user');
 
-const responseBadRequestError = (res, message) => res
+const responseBadRequestError = (res) => res
   .status(http2.constants.HTTP_STATUS_BAD_REQUEST)
-  .send({ message: `Переданы некорректные данные пользователя. ${message}` });
+  .send({ message: 'Переданы некорректные данные пользователя.' });
 
-const responseNotFoundError = (res, message) => res
+const responseNotFoundError = (res) => res
   .status(http2.constants.HTTP_STATUS_NOT_FOUND)
-  .send({ message: `Пользователь не найден. ${message}` });
+  .send({ message: 'Пользователь не найден.' });
 
-const responseServerError = (res, message) => res
+const responseServerError = (res) => res
   .status(http2.constants.HTTP_STATUS_SERVICE_UNAVAILABLE)
-  .send({ message: `На сервере произошла ошибка. ${message}` });
+  .send({ message: 'На сервере произошла ошибка.' });
 
 module.exports.getUsers = (req, res) => {
   User.find({})

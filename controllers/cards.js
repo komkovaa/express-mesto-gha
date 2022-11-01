@@ -2,17 +2,17 @@ const http2 = require('node:http2');
 
 const Card = require('../models/card');
 
-const responseBadRequestError = (res, message) => res
+const responseBadRequestError = (res) => res
   .status(http2.constants.HTTP_STATUS_BAD_REQUEST)
-  .send({ message: `Переданы некорректные данные. ${message}` });
+  .send({ message: 'Переданы некорректные данные.' });
 
-const responseNotFoundError = (res, message) => res
+const responseNotFoundError = (res) => res
   .status(http2.constants.HTTP_STATUS_NOT_FOUND)
-  .send({ message: `Карточка не найдена. ${message}` });
+  .send({ message: 'Карточка не найдена.' });
 
-const responseServerError = (res, message) => res
+const responseServerError = (res) => res
   .status(http2.constants.HTTP_STATUS_SERVICE_UNAVAILABLE)
-  .send({ message: `На сервере произошла ошибка. ${message}` });
+  .send({ message: 'На сервере произошла ошибка.' });
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -60,11 +60,11 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then((cardId, likes) => {
+    .then((cardId) => {
       if (cardId === null) {
         responseNotFoundError(res);
       } else {
-        res.send({ data: likes });
+        res.send({ data: cardId });
       }
     })
     .catch((err) => {
@@ -82,11 +82,11 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then((cardId, likes) => {
+    .then((cardId) => {
       if (cardId === null) {
         responseNotFoundError(res);
       } else {
-        res.send({ data: likes });
+        res.send({ data: cardId });
       }
     })
     .catch((err) => {
