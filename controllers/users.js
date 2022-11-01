@@ -24,7 +24,7 @@ module.exports.getUsers = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
@@ -35,12 +35,12 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
-        next(err);
+        responseServerError(res, err.message);
       }
     });
 };
 
-module.exports.getUserId = (req, res, next) => {
+module.exports.getUserId = (req, res) => {
   User.findById({ _id: req.params.userId })
     .then((userId) => {
       if (userId === null) {
@@ -53,12 +53,12 @@ module.exports.getUserId = (req, res, next) => {
       if (err.name === 'CastError') {
         responseBadRequestError(res, err.message);
       } else {
-        next(err);
+        responseServerError(res, err.message);
       }
     });
 };
 
-module.exports.updateProfileInfo = (req, res, next) => {
+module.exports.updateProfileInfo = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -75,12 +75,12 @@ module.exports.updateProfileInfo = (req, res, next) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
-        next(err);
+        responseServerError(res, err.message);
       }
     });
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -96,7 +96,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         responseBadRequestError(res, err.message);
       } else {
-        next(err);
+        responseServerError(res, err.message);
       }
     });
 };
