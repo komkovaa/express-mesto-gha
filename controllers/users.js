@@ -45,6 +45,24 @@ module.exports.createUser = (req, res) => {
     });
 };
 
+module.exports.login = (req, res) => {
+  const {
+    email, password,
+  } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // аутентификация успешна
+      res.send({ message: 'Всё верно!' });
+    })
+    .catch((err) => {
+      // возвращаем ошибку аутентификации
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
+
 module.exports.getUserId = (req, res) => {
   User.findById({ _id: req.params.userId })
     .then((userId) => {
