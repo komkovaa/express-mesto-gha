@@ -1,5 +1,6 @@
 const http2 = require('node:http2');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
@@ -52,6 +53,20 @@ module.exports.login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      // создадим токен
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        // { expiresIn: '7d' },
+      );
+
+      // вернём токен
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        })
+        .end();// если у ответа нет тела, можно использовать метод end
       // аутентификация успешна
       res.send({ message: 'Всё верно!' });
     })
