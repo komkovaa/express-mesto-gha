@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+const noExtraneousDependencies = require('eslint-plugin-import/lib/rules/no-extraneous-dependencies');
 
 const responseBadRequestError = (res) => res
   .status(http2.constants.HTTP_STATUS_BAD_REQUEST)
@@ -78,6 +79,23 @@ module.exports.login = (req, res) => {
         .send({ message: err.message });
     });
 };
+
+module.exports.currentUser = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (user) {
+        res.send({ data: user });
+      } else {
+        responseNotFoundError(res);
+      }
+    })
+    .catch((err) => {
+if (err.name === 'CastError') {
+  responseBadRequestError(res, err.message);
+} else {
+  responseServerError(res, err.message);
+}
+});
 
 module.exports.getUserId = (req, res) => {
   User.findById({ _id: req.params.userId })

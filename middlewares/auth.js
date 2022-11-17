@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const handleAuthError = (res) => {
   res
     .status(401)
-    .send({ "message": "Необходима авторизация" } );
+    .send({ message: 'Необходима авторизация' });
 };
 
 const extractBearerToken = (header) => {
@@ -13,7 +13,7 @@ const extractBearerToken = (header) => {
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return handleAuthError(res)
+    return handleAuthError(res);
   }
 
   // извлечём токен
@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    return handleAuthError(res)
+    return handleAuthError(res);
   }
   req.user = payload; // записываем пейлоуд в объект запроса
 
