@@ -65,6 +65,7 @@ module.exports.login = (req, res) => {
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
+          sameSite: true,
         })
         .end();// если у ответа нет тела, можно использовать метод end
       // аутентификация успешна
