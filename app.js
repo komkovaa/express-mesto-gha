@@ -7,6 +7,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
+const login = require('./controllers/users');
+const createUser = require('./controllers/users');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,6 +16,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use((req, res, next) => {
   req.user = {

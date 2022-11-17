@@ -7,8 +7,6 @@ userRouter.get('/', getUsers);
 
 userRouter.get('/:userId', getUserId);
 
-userRouter.post('/', createUser);
-
 userRouter.patch('/me', updateProfileInfo);
 
 userRouter.patch('/me/avatar', updateAvatar);
