@@ -17,7 +17,7 @@ module.exports.getUsers = (req, res, next) => {
     })
     .catch((err) => {
       next(err);
-      //responseServerError(res, err.message);
+      // responseServerError(res, err.message);
     });
 };
 
@@ -96,7 +96,7 @@ module.exports.currentUser = (req, res, next) => {
         next(new BadRequestError('Переданы некорректные данные пользователя.'));
       } else {
         next(err);
-        //next(responseServerError(err.message));
+        // next(responseServerError(err.message));
       }
     });
 };
@@ -117,7 +117,7 @@ module.exports.getUserId = (req, res, next) => {
         next(new BadRequestError('Переданы некорректные данные пользователя.'));
       } else {
         next(err);
-        //next(responseServerError(err.message));
+        // next(responseServerError(err.message));
       }
     });
 };

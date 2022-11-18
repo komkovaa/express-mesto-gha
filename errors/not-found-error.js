@@ -1,5 +1,5 @@
 const http2 = require('node:http2');
-const HTTPError = require('./http-error')
+const HTTPError = require('./http-error');
 
 class NotFoundError extends HTTPError {
   constructor(message) {
