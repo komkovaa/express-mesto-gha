@@ -1,4 +1,3 @@
-const http2 = require('node:http2');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -10,13 +9,6 @@ const { ServerError } = require('../errors/server-error');
 const { UnauthorizedError } = require('../errors/anauthorized-error');
 const { ConflictError } = require('../errors/conflict-error');
 const HTTPError = require('../errors/http-error');
-
-const responseBadRequestError = (message) => new BadRequestError(`Переданы некорректные данные пользователя. ${message}`);
-const responseNotFoundError = () => new NotFoundError('Пользователь не найден.');
-const responseServerError = () => new ServerError('На сервере произошла ошибка.');
-const responseUnauthorizedError = () => new UnauthorizedError('Неверный логин или пароль');
-const errorNotUnique = () => new ConflictError('Пользователь с таким именем уже существует');
-const UniqueErrorCode = 11000;
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -44,7 +36,7 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err instanceof HTTPError) {
         next(err);
-      } else if (err.code === UniqueErrorCode) {
+      } else if (err.code === 11000) {
         next(new ConflictError('Пользователь с такой почтой уже существует'));
       } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные пользователя.'));
@@ -88,20 +80,23 @@ module.exports.login = (req, res, next) => {
     });
 };
 
-module.exports.currentUser = (req, res) => {
+module.exports.currentUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (user) {
-        res.send({ data: user });
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден.');
       } else {
-        responseNotFoundError(res);
+        res.send({ data: user });
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        responseBadRequestError(res, err.message);
+      if (err instanceof HTTPError) {
+        next(err);
+      } else if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные пользователя.'));
       } else {
-        responseServerError(res, err.message);
+        next(err);
+        //next(responseServerError(err.message));
       }
     });
 };
