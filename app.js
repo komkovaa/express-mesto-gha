@@ -11,6 +11,7 @@ const { login } = require('./controllers/users');
 const { createUser } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
 const { urlLink } = require('./models/user');
+const NotFoundError = require('./errors/not-found-error');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -41,6 +42,10 @@ app.post('/signin', celebrate({
 
 app.use('/users', auth, userRouter);
 app.use('/cards', auth, cardRouter);
+
+app.all('/*', (req, res, next) => {
+  next(new NotFoundError('Страница не существует'));
+});
 
 app.use(errors());
 app.use((err, req, res, next) => {

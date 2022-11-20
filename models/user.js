@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
       validator: (email) => {
         validator.isEmail(email);
       },
-      message: 'Неправильный формат почты',
+      message: () => 'Неправильный формат почты',
     },
   },
   password: {
@@ -62,10 +62,8 @@ userSchema.statics.findUserByCredentials = function (email, password) {
           if (!matched) {
             throw new UnauthorizedError('Неправильные почта или пароль');
           }
-          const {
-            password: remove,
-            ...user
-          } = document.toObject();
+          const user = document.toObject();
+          delete user.password;
           return user;
         });
     });

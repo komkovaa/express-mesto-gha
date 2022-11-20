@@ -1,13 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
+const { User } = require('../models/user');
 
-const { BadRequestError } = require('../errors/bad-request-error');
-const { NotFoundError } = require('../errors/not-found-error');
-const { ServerError } = require('../errors/server-error');
-const { UnauthorizedError } = require('../errors/anauthorized-error');
-const { ConflictError } = require('../errors/conflict-error');
+const BadRequestError = require('../errors/bad-request-error');
+const NotFoundError = require('../errors/not-found-error');
+const ServerError = require('../errors/server-error');
+const UnauthorizedError = require('../errors/anauthorized-error');
+const ConflictError = require('../errors/conflict-error');
 const HTTPError = require('../errors/http-error');
 
 module.exports.getUsers = (req, res, next) => {
@@ -60,17 +60,7 @@ module.exports.login = (req, res, next) => {
         'some-secret-key',
         { expiresIn: '7d' },
       );
-
-      // вернём токен
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .end();// если у ответа нет тела, можно использовать метод end
-      // аутентификация успешна
-      res.send({ message: 'Всё верно!' });
+      res.send({ token });
     })
     .catch((err) => {
       if (err instanceof HTTPError) {
