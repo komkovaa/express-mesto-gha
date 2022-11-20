@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+
+const urlLink = /^https?:\/\/(www\.)?[a-zA-Z\0-9]+\.[\w\-._~:/?#[\]@!$&'()*+,;=]{2,}#?$/;
 const {
   UnauthorizedError,
 } = require('../errors/bad-request-error');
@@ -21,21 +23,25 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: (link) => urlLink.test(link),
+      message: () => 'Требуется http(s) ссылка',
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validator(email) {
-        return validator.isEmail(email);
+      validator: (email) => {
+        validator.isEmail(email);
       },
+      message: 'Неправильный формат почты',
     },
   },
   password: {
     type: String,
     required: true,
-    minlength: 8,
     select: false,
   },
 });
@@ -66,4 +72,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
 };
 
 // Создаем модель и экспортируем ее
-module.exports = mongoose.model('user', userSchema);
+module.exports = {
+  User: mongoose.model('user', userSchema),
+  urlLink,
+};

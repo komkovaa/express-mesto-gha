@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { urlLink } = require('./user');
+
 // Опишем схему
 const cardSchema = new mongoose.Schema({
   name: {
@@ -10,6 +12,10 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (link) => urlLink.test(link),
+      message: () => 'Требуется http(s) ссылка',
+    },
   },
   owner: {
     type: mongoose.ObjectId,
