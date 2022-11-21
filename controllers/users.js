@@ -81,14 +81,7 @@ module.exports.currentUser = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err instanceof HTTPError) {
-        next(err);
-      } else if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные пользователя.'));
-      } else {
-        next(err);
-        // next(responseServerError(err.message));
-      }
+      next(new ServerError(err.message));
     });
 };
 
