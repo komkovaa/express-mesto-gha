@@ -4,8 +4,10 @@ const UnauthorizedError = require('../errors/anauthorized-error');
 
 module.exports.auth = (req, res, next) => {
   const { authorization } = req.headers;
+  console.log('что здесь - ', req.headers);
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw new UnauthorizedError('Необходима авторизация.');
+    console.log('что в if - ', authorization);
+    throw new UnauthorizedError('Необходима авторизация.ОШИБКА');
   }
 
   // извлечём токен
@@ -18,6 +20,5 @@ module.exports.auth = (req, res, next) => {
     next(new UnauthorizedError('Необходима авторизация.'));
   }
   req.user = payload; // записываем пейлоуд в объект запроса
-
   next(); // пропускаем запрос дальше
 };
