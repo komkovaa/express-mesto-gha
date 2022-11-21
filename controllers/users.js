@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const http2 = require('node:http2');
 const { User } = require('../models/user');
 
 const BadRequestError = require('../errors/bad-request-error');
@@ -54,12 +53,14 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      console.log(user);
       // создадим токен
       const token = jwt.sign(
         { _id: user._id },
         'some-secret-key',
         { expiresIn: '7d' },
       );
+      console.log(token);
       res.send({ token });
     })
     .catch((err) => {
