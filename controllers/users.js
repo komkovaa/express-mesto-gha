@@ -77,11 +77,15 @@ module.exports.currentUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден.');
       } else {
-        res.status(http2.constants.HTTP_STATUS_OK).send({ data: user });
+        res.send({ data: user });
       }
     })
     .catch((err) => {
-      next(new ServerError(err.message));
+      if (err.name === 'CastError') {
+        next(new BadRequestError('Переданы некорректные данные.'));
+      } else {
+        next(err);
+      }
     });
 };
 
