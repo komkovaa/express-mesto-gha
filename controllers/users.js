@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const http2 = require('node:http2');
 const { User } = require('../models/user');
 
 const BadRequestError = require('../errors/bad-request-error');
@@ -77,7 +77,7 @@ module.exports.currentUser = (req, res, next) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден.');
       } else {
-        res.send({ data: user });
+        res.status(http2.constants.HTTP_STATUS_OK).send({ data: user });
       }
     })
     .catch((err) => {
