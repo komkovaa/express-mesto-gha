@@ -53,7 +53,6 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // создадим токен
       const token = jwt.sign(
         { _id: user._id },
         'some-secret-key',
@@ -104,7 +103,6 @@ module.exports.getUserId = (req, res, next) => {
         next(new BadRequestError('Переданы некорректные данные пользователя.'));
       } else {
         next(err);
-        // next(responseServerError(err.message));
       }
     });
 };
