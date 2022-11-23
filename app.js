@@ -1,17 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const http2 = require('node:http2');
-const { celebrate, Joi } = require('celebrate');
 
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-const userRouter = require('./routes/users');
-const cardRouter = require('./routes/cards');
-const { login } = require('./controllers/users');
-const { createUser } = require('./controllers/users');
+const router = require('./routes/index');
 const { auth } = require('./middlewares/auth');
-const { urlLink } = require('./models/user');
-const NotFoundError = require('./errors/not-found-error');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -23,30 +17,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(urlLink),
-    about: Joi.string().min(2).max(30),
-  }),
-}), createUser);
-
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
-
 app.use(auth);
-app.use('/users', userRouter);
-app.use('/cards', cardRouter);
-
-app.all('/*', (req, res, next) => {
-  next(new NotFoundError('Страница не существует'));
-});
+app.use(router);
 
 app.use(errors());
 app.use((err, req, res, next) => {
