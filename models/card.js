@@ -19,6 +19,7 @@ const cardSchema = new mongoose.Schema({
   },
   owner: {
     type: mongoose.ObjectId,
+    ref: 'user', // показывает, у какой модели берем ID
     required: true,
   },
   likes: {

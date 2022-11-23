@@ -16,7 +16,6 @@ module.exports.getUsers = (req, res, next) => {
     })
     .catch((err) => {
       next(err);
-      // responseServerError(res, err.message);
     });
 };
 
@@ -79,11 +78,7 @@ module.exports.currentUser = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные.'));
-      } else {
-        next(err);
-      }
+      next(err);
     });
 };
 
