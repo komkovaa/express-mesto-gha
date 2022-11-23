@@ -40,8 +40,9 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-app.use('/users', auth, userRouter);
-app.use('/cards', auth, cardRouter);
+app.use(auth);
+app.use('/users', userRouter);
+app.use('/cards', cardRouter);
 
 app.all('/*', (req, res, next) => {
   next(new NotFoundError('Страница не существует'));
