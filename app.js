@@ -50,9 +50,9 @@ app.all('/*', (req, res, next) => {
 
 app.use(errors());
 app.use((err, req, res, next) => {
-  const status = err.statusCode || http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
-  const message = err.message || 'Неизвестная ошибка';
-  res.status(status).send({ message });
+  const statusCode = err.statusCode || http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
+  const message = statusCode === http2.constants.HTTP_STATUS_INTERNAL_SERVER_ERROR ? 'На сервере произошла ошибка' : err.message;
+  res.status(statusCode).send({ message });
   next();
 });
 
