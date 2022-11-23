@@ -7,7 +7,6 @@ const NotFoundError = require('../errors/not-found-error');
 const ServerError = require('../errors/server-error');
 const UnauthorizedError = require('../errors/anauthorized-error');
 const ConflictError = require('../errors/conflict-error');
-const HTTPError = require('../errors/http-error');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -33,14 +32,14 @@ module.exports.createUser = (req, res, next) => {
       res.send({ data: user });
     })
     .catch((err) => {
-      if (err instanceof HTTPError) {
-        next(err);
-      } else if (err.code === 11000) {
+      if (err.code === 11000) {
         next(new ConflictError('Пользователь с такой почтой уже существует'));
       } else if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные пользователя.'));
       } else {
-        next(new ServerError(err.message));
+        next(err); // по дефолту передаем саму ошибку.
+        // Все ошибки с кодом (HTTPError) перейдут в обработчик,
+        // а ошибкам, у которых нет кода, в обработчике будет добавлен дефолтный код 500
       }
     });
 };
@@ -59,12 +58,8 @@ module.exports.login = (req, res, next) => {
       );
       res.send({ token });
     })
-    .catch((err) => {
-      if (err instanceof HTTPError) {
-        next(err);
-      } else {
-        next(new UnauthorizedError('Неправильные почта или пароль'));
-      }
+    .catch(() => {
+      next(new UnauthorizedError('Неправильные почта или пароль'));
     });
 };
 
@@ -92,9 +87,7 @@ module.exports.getUserId = (req, res, next) => {
       }
     })
     .catch((err) => {
-      if (err instanceof HTTPError) {
-        next(err);
-      } else if (err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные пользователя.'));
       } else {
         next(err);
