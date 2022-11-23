@@ -5,7 +5,6 @@ const http2 = require('node:http2');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const router = require('./routes/index');
-const { auth } = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -17,7 +16,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
 
-app.use(auth);
 app.use(router);
 
 app.use(errors());

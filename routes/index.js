@@ -6,6 +6,7 @@ const cardRouter = require('./cards');
 const { login } = require('../controllers/users');
 const { createUser } = require('../controllers/users');
 const { urlLink } = require('../models/user');
+const { auth } = require('../middlewares/auth');
 const NotFoundError = require('../errors/not-found-error');
 
 router.post('/signup', celebrate({
@@ -24,6 +25,8 @@ router.post('/signin', celebrate({
     password: Joi.string().required(),
   }),
 }), login);
+
+router.use(auth);
 
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
